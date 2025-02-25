@@ -34,6 +34,7 @@ public class GameController {
 
     final public Board board;
 
+
     public GameController(@NotNull Board board) {
         this.board = board;
     }
@@ -53,7 +54,17 @@ public class GameController {
         //   - the counter of moves in the game should be increased by one
         //     if and when the player is moved (the counter and the status line
         //     message needs to be implemented at another place)
+        Player current = board.getCurrentPlayer();
+        int totalNuOfPlayers = board.getPlayersNumber();
 
+        var numberOfCurrentPlayer  = board.getPlayerNumber(current);
+
+        if(space != null && space.getPlayer() == null){
+            space.setPlayer(current);
+
+            board.setCurrentPlayer(board.getPlayer((numberOfCurrentPlayer+1) % totalNuOfPlayers));
+
+        }
     }
 
     // XXX V2
