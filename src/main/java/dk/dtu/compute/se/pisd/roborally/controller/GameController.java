@@ -63,6 +63,7 @@ public class GameController {
             space.setPlayer(current);
 
             board.setCurrentPlayer(board.getPlayer((numberOfCurrentPlayer+1) % totalNuOfPlayers));
+            board.setCounter(board.getCounter() + 1);
         }
     }
 
