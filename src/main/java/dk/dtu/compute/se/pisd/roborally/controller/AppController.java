@@ -43,6 +43,8 @@ import java.util.Optional;
  * @author Ekkart Kindler, ekki@dtu.dk
  *
  */
+
+// testing testing testing testing
 public class AppController implements Observer {
 
     final private List<Integer> PLAYER_NUMBER_OPTIONS = Arrays.asList(2, 3, 4, 5, 6);
