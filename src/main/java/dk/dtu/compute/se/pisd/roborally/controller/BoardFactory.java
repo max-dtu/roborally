@@ -4,6 +4,9 @@ import dk.dtu.compute.se.pisd.roborally.model.Board;
 import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 
+import java.util.Arrays;
+import java.util.List;
+
 /**
  * A factory for creating boards. The factory itself is implemented as a singleton.
  *
@@ -36,52 +39,73 @@ public class BoardFactory {
         return instance;
     }
 
+
+    public List<String> getAvailableBoardNames() {
+        return Arrays.asList("Classic", "Maze", "Race Track"); // Added predefined board names
+    }
+
     /**
-     * Creates a new board of given name of a board, which indicates
-     * which type of board should be created. For now the name is ignored.
+     * Creates a board based on the given name.
+     * Different board layouts can be implemented here.
      *
-     * @param name the given name board
-     * @return the new board corresponding to that name
+     * @param name The name of the board
+     * @return A new Board instance
      */
     public Board createBoard(String name) {
+
         Board board;
         if (name == null) {
             board = new Board(8,8, "<none>");
         } else {
-            board = new Board(8,8, name);
+            board = new Board(8, 8, name);
+
+            // Added switch case to create specific board layouts
+            switch (name) {
+                case "Classic":
+                    createClassicBoard(board);
+                    break;
+                case "Maze":
+                    createMazeBoard(board);
+                    break;
+                case "Race Track":
+                    createRaceTrackBoard(board);
+                    break;
+                default:
+                    break;
+            }
         }
 
-        // add some walls, actions and checkpoints to some spaces
-        Space space = board.getSpace(0,0);
-        space.getWalls().add(Heading.SOUTH);
-        ConveyorBelt action  = new ConveyorBelt();
-        action.setHeading(Heading.WEST);
-        space.getActions().add(action);
-
-        space = board.getSpace(1,0);
-        space.getWalls().add(Heading.NORTH);
-        action  = new ConveyorBelt();
-        action.setHeading(Heading.WEST);
-        space.getActions().add(action);
-
-        space = board.getSpace(1,1);
-        space.getWalls().add(Heading.WEST);
-        action  = new ConveyorBelt();
-        action.setHeading(Heading.NORTH);
-        space.getActions().add(action);
-
-        space = board.getSpace(5,5);
-        space.getWalls().add(Heading.SOUTH);
-        action  = new ConveyorBelt();
-        action.setHeading(Heading.WEST);
-        space.getActions().add(action);
-
-        space = board.getSpace(6,5);
-        action  = new ConveyorBelt();
-        action.setHeading(Heading.WEST);
-        space.getActions().add(action);
-
         return board;
+    }
+
+    /**
+     * Creates a simple board with some conveyor belts and walls.
+     */
+    private void createClassicBoard(Board board) {
+        Space space = board.getSpace(0, 0);
+        space.getWalls().add(Heading.SOUTH);
+        ConveyorBelt action = new ConveyorBelt();
+        action.setHeading(Heading.WEST);
+        space.getActions().add(action);
+    }
+
+    /**
+     * Creates a maze-like board by adding walls to form a barrier.
+     */
+    private void createMazeBoard(Board board) {
+        for (int i = 0; i < 8; i++) {
+            board.getSpace(i, 4).getWalls().add(Heading.SOUTH); // Creating a horizontal wall
+        }
+    }
+
+    /**
+     * Creates a racetrack with walls guiding the players.
+     */
+    private void createRaceTrackBoard(Board board) {
+        for (int i = 0; i < 8; i++) {
+            board.getSpace(i, 2).getWalls().add(Heading.EAST);
+            board.getSpace(i, 6).getWalls().add(Heading.WEST);
+        }
     }
 
 }

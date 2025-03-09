@@ -22,6 +22,8 @@
 package dk.dtu.compute.se.pisd.roborally.view;
 
 import dk.dtu.compute.se.pisd.designpatterns.observer.Subject;
+import dk.dtu.compute.se.pisd.roborally.controller.Checkpoint;
+import dk.dtu.compute.se.pisd.roborally.model.Heading;
 import dk.dtu.compute.se.pisd.roborally.model.Player;
 import dk.dtu.compute.se.pisd.roborally.model.Space;
 import javafx.scene.layout.StackPane;
@@ -37,8 +39,8 @@ import org.jetbrains.annotations.NotNull;
  */
 public class SpaceView extends StackPane implements ViewObserver {
 
-    final public static int SPACE_HEIGHT = 40; // 60; // 75;
-    final public static int SPACE_WIDTH = 40;  // 60; // 75;
+    final public static double SPACE_HEIGHT = 40; // 60; // 75;
+    final public static double SPACE_WIDTH = 40;  // 60; // 75;
 
     public final Space space;
 
@@ -73,29 +75,76 @@ public class SpaceView extends StackPane implements ViewObserver {
         if (player != null) {
             Polygon arrow = new Polygon(0.0, 0.0,
                     10.0, 20.0,
-                    20.0, 0.0 );
+                    20.0, 0.0);
             try {
                 arrow.setFill(Color.valueOf(player.getColor()));
             } catch (Exception e) {
                 arrow.setFill(Color.MEDIUMPURPLE);
             }
 
-            arrow.setRotate((90*player.getHeading().ordinal())%360);
+            arrow.setRotate((90 * player.getHeading().ordinal()) % 360);
             this.getChildren().add(arrow);
         }
     }
+
 
     @Override
     public void updateView(Subject subject) {
         if (subject == this.space) {
             this.getChildren().clear();
 
-            // XXX A3: drawing walls and action on the space (could be done
-            //         here); it would be even better if fixed things on
-            //         spaces  are only drawn once (and not on every update)
+            // Draw walls if present
+            drawWalls();
 
+            // Draw field actions (e.g., checkpoints, repair sites)
+            drawFieldActions();
+
+            // Draw player if present
             updatePlayer();
         }
+    }
+
+
+    /**
+     * Draws walls around the space if they exist.
+     */
+    private void drawWalls() {
+        for (Heading heading : Heading.values()) {
+
+            Polygon wall = new Polygon();
+            wall.setFill(Color.GRAY);
+
+            switch (heading) {
+                case NORTH:
+                    wall.getPoints().addAll(0.0, 0.0, SPACE_WIDTH, 0.0, SPACE_WIDTH - 5, 5.0, 5.0, 5.0);
+                    break;
+                case SOUTH:
+                    wall.getPoints().addAll(0.0, SPACE_HEIGHT, SPACE_WIDTH, SPACE_HEIGHT, SPACE_WIDTH - 5, SPACE_HEIGHT - 5, 5.0, SPACE_HEIGHT - 5);
+                    break;
+                case EAST:
+                    wall.getPoints().addAll(SPACE_WIDTH, 0.0, SPACE_WIDTH, SPACE_HEIGHT, SPACE_WIDTH - 5, SPACE_HEIGHT - 5, SPACE_WIDTH - 5, 5.0);
+                    break;
+                case WEST:
+                    wall.getPoints().addAll(0.0, 0.0, 0.0, SPACE_HEIGHT, 5.0, SPACE_HEIGHT - 5, 5.0, 5.0);
+                    break;
+            }
+
+            this.getChildren().add(wall);
+
+        }
+    }
+
+
+    /**
+     * Draws field actions such as checkpoints.
+     */
+    private void drawFieldActions() {
+
+        Polygon checkpointMarker = new Polygon(10.0, 0.0, 20.0, 20.0, 0.0, 20.0);
+        checkpointMarker.setFill(Color.YELLOW);
+        this.getChildren().add(checkpointMarker);
+
+
     }
 
 }
